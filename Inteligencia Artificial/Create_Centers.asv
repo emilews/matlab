@@ -1,0 +1,12 @@
+function centers = Create_Centers(AssignedCents, Features, K)
+    num_rows = k;
+    num_cols = 3;
+    r=
+    centers = zeros(num_rows, num_cols);
+    for j = 1 : size(Features, 1)
+        for i = 1 : size(AssignedCents,1)
+            if (AssignedCents(j) == Features(j))
+                r
+        end
+    end
+end
