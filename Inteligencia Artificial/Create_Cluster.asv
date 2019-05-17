@@ -1,3 +1,0 @@
-function y=Create_Cluster(AssignedCents, Features, I)
-    num_rows = size(I
-end

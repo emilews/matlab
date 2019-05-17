@@ -1,12 +1,14 @@
 function NI=k_meansIA(k, image, w)
 
+image = 'tomato2.jpg';
+k = 3;
+w = 20;
 %k es el num de clusters
 %image es la imagen a analizar. El nombre deberá recibirse entre apóstrofes 'NombreDeArchivo.tiff '
 % Este ser? el peso de la posici?n en x, y.
 
 %k_means(k, 'Tiger1.tiff', 0)
-k=5;
-I1= im2uint16(imread('Tiger1.jpg'));
+I1= im2uint16(imread(image));
 I1 = I1/256;
 s=size(I1);
 I=zeros(s(1), s(2), 3);
@@ -25,10 +27,12 @@ num_elems = num_rows * num_cols;
 Features = Create_Features(I, num_rows, num_cols);
 
 % normalizar Features
-Feature_Norm = normalize_matrix(Features);
+Feature_Norm = normalize_matrix(Features, I);
+Feature_Norm(:,1) = Feature_Norm(:,1) * w;
+Feature_Norm(:,2) = Feature_Norm(:,2) * w;
 
 %Inicializar centroides. Elijan k centroides al azar
-centroids = init_centroids(Feature, k);
+centroids = init_centroids(Feature_Norm, k);
 
 
 % Aquí va su código para ejecutar KMeans. Por lo pronto se requiere hacer
@@ -43,7 +47,7 @@ AssignedCent = zeros(num_cols*num_rows, 1);
 isDifferent = true;
 while(isDifferent)
     for i = 1 : num_samples; %Para el número de muestras
-        for j = 1 : num_attributes; %Para el número de gestos
+        for j = 1 : k; 
             %Llamamos a distancia para conocer la distancia hacia cada
             %centroide
             dists(i, j) = distancia(samples(i, :), Centroids(j, :));
@@ -84,15 +88,17 @@ new_image=zeros(s);
 % después supliremos los valores de r g b por los valores del cluster
 % al que pertenece cada pixel.
 clusters = Create_Cluster(AssignedCent, Features, I);
-centers = Create_Centers(AssignedCent, Features, k);
+centers = ColorIA(AssignedCent, Features, k);
 for i=1:k
 mask = (clusters ==i);
-new_image(:,:,1) = new_image(:,:,1) + (mask.* centers(i, 3));
-new_image(:,:,2) = new_image(:,:,2) + (mask.* centers(i, 4));
-new_image(:,:,3) = new_image(:,:,3) + (mask.* centers(i, 5));
+new_image(:,:,1) = new_image(:,:,1) + (mask.* centers(i, 1));
+new_image(:,:,2) = new_image(:,:,2) + (mask.* centers(i, 2));
+new_image(:,:,3) = new_image(:,:,3) + (mask.* centers(i, 3));
 end
 
 NI=uint8(new_image);
+figure(1);
+imshow(NI);
 
 
 end

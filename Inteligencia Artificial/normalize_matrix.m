@@ -1,10 +1,10 @@
-function f=normalize_matrix(features)
+function f=normalize_matrix(features, I)
     f = features;
     maxR = max(f(:, 3));
     maxG = max(f(:, 4));
     maxB = max(f(:, 5));
-    maxX = 364;
-    maxY = 236;
+    maxX = size(I, 2);
+    maxY = size(I, 1);
     for i = 1 : size(f,1)
        f(i, 1) = (f(i, 1) - 1)/(maxX - 1);
        f(i, 2) = (f(i, 2) - 1)/(maxY - 1);
