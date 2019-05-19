@@ -1,15 +1,11 @@
-addpath('C:\Users\csipro\Desktop\libsvm-3.23');
-
-
-
-
+addpath('C:\Users\emili\Documents\MATLAB\matlab\Inteligencia Artificial\Trabajo Cancer\libsvm-3.23\matlab');
 %Empezamos todo con Leave One Out
 %Primer for para saber cual dejar fuera
 %Creamos variables para conocer el accuracy del algoritmo
 Success = 0;
 for i = 1 : size(SAMPLES, 1)-1;
     %Variable para conocer si ya dejamos un sample fuera
-    leftOne = 0;
+    leftOne = false;
     %Inicializamos arrays en cero para llenarlos con los datos para
     %entrenar restando 1 al tamaño, es decir, sin tomar en cuenta el que
     %dejamos fuera
@@ -23,18 +19,24 @@ for i = 1 : size(SAMPLES, 1)-1;
         if (j == i);
             TestLabel(1,1) = LABELS(i, 1);
             TestSample(1, :) = SAMPLES(i, :);
-            leftOne = 1;
+            leftOne = true;
         end;
         %Si ya dejamos uno fuera, entonces tenemos que restar 1 al contador
         %puesto que en el array tenemos 1 menos de tamaño que el original,
         %tenemos que compensar
-        if(leftOne == 1);
-        TrainLabels(j + 1, 1) = LABELS(j, 1);
-        TrainSamples(j + 1, :) = SAMPLES(j, :);
-        end;
-        if(leftOne == 0);
+        if(leftOne == false);
             TrainLabels(j, 1) = LABELS(j, 1);
             TrainSamples(j, :) = SAMPLES(j, :);
+        end;
+        if(leftOne == true);
+            if(i == 1);
+                TrainLabels(j, 1) = LABELS(j, 1);
+                TrainSamples(j, :) = SAMPLES(j, :);
+            end;
+            if(i ~= 1);
+                TrainLabels(j - 1, 1) = LABELS(j, 1);
+                TrainSamples(j - 1, :) = SAMPLES(j, :);
+            end;
         end;
     end;
     %Mapeamos los casos en los labels
@@ -54,10 +56,12 @@ for i = 1 : size(SAMPLES, 1)-1;
     svmstruct = svmtrain(LabelsMatrix, AllSamples, '-b 1 -q');
     %Predecimos con el que dejamos fuera
     [pred_labels,ac,p] = svmpredict(TestLabel,TestSample,svmstruct,'-b 1 -q');
+    disp(pred_labels);
     if(ac(1) == 100);
        Success = Success + 1;
     end;
 end;
+disp(Success);
 Accuracy = (Success*100)/size(SAMPLES, 1);
 disp(Accuracy);
 
