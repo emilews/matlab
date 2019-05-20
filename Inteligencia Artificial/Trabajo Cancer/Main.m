@@ -62,7 +62,7 @@ for i = 1 : size(SAMPLES, 1);
     LabelsMatrix= [Label2; Label4];
     %Entrenamos con lo que tenemos (si no es la última iteración)
     if(i ~= 683);
-        svmstruct = svmtrain(LabelsMatrix, AllSamples, '-b 1 -q');
+        svmstruct = svmtrain(LabelsMatrix, AllSamples, '-s 0 -q');
     end;
     %Por alguna razón se rompe cuando estamos en la última
     %iteración (i = 683), mejor reiniciamos todo y no hacemos preguntas
@@ -70,7 +70,7 @@ for i = 1 : size(SAMPLES, 1);
         svmstruct = Exception(SAMPLES, LABELS);
     end;
     %Predecimos con el que dejamos fuera
-    [pred_labels,ac,p] = svmpredict(TestLabel,TestSample,svmstruct,'-b 1 -q');
+    [pred_labels,ac,p] = svmpredict(TestLabel,TestSample,svmstruct,'-q');
     %Empezamos con los positivos y negativos
     %Si se acertó, entonces vemos si fue de clase 2 o clase 4 y sumamos uno
     %al contador
@@ -96,10 +96,38 @@ Nom = (ClassOnePositive+ClassTwoPositive);
 Den = (ClassOnePositive+ClassTwoPositive+ClassOneNegative+ClassTwoNegative);
 ACC = Nom / Den;
 Accuracy = ACC * 100;
+%Sacamos accuracy de benigno
+bAccuracy = (ClassOnePositive /(ClassOnePositive+ClassTwoPositive+ClassOneNegative+ClassTwoNegative))*100;
+%Sacamos accuracy de maligno
+mAccuracy = (ClassTwoPositive /(ClassOnePositive+ClassTwoPositive+ClassOneNegative+ClassTwoNegative))*100;
+%Sacamos accuracy de maligno
+%Sacamos la precisión para benignos
+bPrecision = ClassOnePositive / (ClassOnePositive + ClassTwoPositive);
 %Sacamos la precisión para malignos
-Precision = ClassTwoPositive / (ClassTwoPositive + ClassOnePositive);
-%Sacamos el recall
-Recall = ClassTwoPositive / (ClassTwoPositive + ClassOneNegative);
+mPrecision = ClassTwoPositive / (ClassOnePositive + ClassTwoPositive);
+%Sacamos el recall benigno
+bRecall = ClassOnePositive / (ClassOnePositive + ClassTwoNegative);
+%Sacamos el recall maligno
+mRecall = ClassTwoPositive / (ClassTwoPositive + ClassOneNegative);
+%Sacamos F1-Score para benignos
+bF = 2*(bRecall*bPrecision) / (bRecall+bPrecision);
+%Sacamos F1-Score para malignos
+mF = 2*(mRecall*mPrecision) / (mRecall+mPrecision);
+disp('Accuracy general');
 disp(Accuracy);
-disp(Precision);
-disp(Recall);
+disp('Accuracy benigno');
+disp(bAccuracy);
+disp('Accuracy maligno');
+disp(mAccuracy);
+disp('Precision benigno');
+disp(bPrecision);
+disp('Precision maligno');
+disp(mPrecision);
+disp('Recall benigno');
+disp(bRecall);
+disp('Recall maligno');
+disp(mRecall);
+disp('F1-Score benigno');
+disp(bF);
+disp('F1-Score maligno');
+disp(mF);

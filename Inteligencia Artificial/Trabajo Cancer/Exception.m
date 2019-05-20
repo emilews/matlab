@@ -42,6 +42,6 @@ function data = Exception(SAMPLES, LABELS)
     Label4=zeros(size(Samples4, 1), 1);
     Label4(:,:) = 4;
     LabelsMatrix= [Label2; Label4];
-    data = svmtrain(LabelsMatrix, AllSamples, '-b 1 -q');
+    data = svmtrain(LabelsMatrix, AllSamples, '-s 0 -q');
 
 end

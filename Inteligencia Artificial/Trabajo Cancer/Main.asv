@@ -54,12 +54,15 @@ for i = 1 : size(SAMPLES, 1);
     AllSamples = [Samples2; Samples4];
     %Matriz de labels con 2 y 4
     Label2=ones(size(Samples2, 1), 1);
+    %Cambiamos de 1 a 2 puesto que así están los labels
+    Label2(:,:) = 2;
     Label4=zeros(size(Samples4, 1), 1);
+    %Cambiamos de 0 a 4 puesto que así están los labels
     Label4(:,:) = 4;
     LabelsMatrix= [Label2; Label4];
     %Entrenamos con lo que tenemos (si no es la última iteración)
     if(i ~= 683);
-        svmstruct = svmtrain(LabelsMatrix, AllSamples, '-b 1 -q');
+        svmstruct = svmtrain(LabelsMatrix, AllSamples, '-s 0 -q');
     end;
     %Por alguna razón se rompe cuando estamos en la última
     %iteración (i = 683), mejor reiniciamos todo y no hacemos preguntas
@@ -67,24 +70,55 @@ for i = 1 : size(SAMPLES, 1);
         svmstruct = Exception(SAMPLES, LABELS);
     end;
     %Predecimos con el que dejamos fuera
-    [pred_labels,ac,p] = svmpredict(TestLabel,TestSample,svmstruct,'-b 1 -q');
-    %Empezamos con los positio
+    [pred_labels,ac,p] = svmpredict(TestLabel,TestSample,svmstruct,'-q');
+    %Empezamos con los positivos y negativos
+    %Si se acertó, entonces vemos si fue de clase 2 o clase 4 y sumamos uno
+    %al contador
     if (ac(1) == 100);
-        if(TestLabel(1, 1) == 2);
+        if(TestLabel(1) == 2);
             ClassOnePositive = ClassOnePositive + 1;
         end;
-        if(TestLabel(1, 1) == 4);
+        if(TestLabel(1) == 4);
             ClassTwoPositive = ClassTwoPositive + 1;
         end;
     end;
     if(ac(1) == 0);
-        if(TestLabel(1, 1) == 2);
+        if(TestLabel(1) == 2);
             ClassOneNegative = ClassOneNegative + 1;
         end;
-        if(TestLabel(1, 1) == 4);
+        if(TestLabel(1) == 4);
             ClassTwoNegative = ClassTwoNegative + 1;
         end;
     end;
 end;
-Accuracy = (ClassOnePositive+ClassTwoPositive)/ClassOnePositive+ClassTwoPositive+ClassOneNegative+ClassTwoNegative;
+%Sacamos el accuracy general
+Nom = (ClassOnePositive+ClassTwoPositive);
+Den = (ClassOnePositive+ClassTwoPositive+ClassOneNegative+ClassTwoNegative);
+ACC = Nom / Den;
+Accuracy = ACC * 100;
+%Sacamos accuracy de benigno
+bAccuracy = (ClassOnePositive /(ClassOnePositive+ClassTwoPositive+ClassOneNegative+ClassTwoNegative))*100;
+%Sacamos accuracy de maligno
+mAccuracy = (ClassTwoPositive /(ClassOnePositive+ClassTwoPositive+ClassOneNegative+ClassTwoNegative))*100;
+%Sacamos accuracy de maligno
+%Sacamos la precisión para benignos
+bPrecision = ClassOnePositive / (ClassOnePositive + ClassTwoPositive);
+%Sacamos la precisión para malignos
+mPrecision = ClassTwoPositive / (ClassOnePositive + ClassTwoPositive);
+%Sacamos el recall benigno
+bRecall = ClassOnePositive / (ClassOnePositive + ClassTwoNegative);
+%Sacamos el recall maligno
+mRecall = ClassTwoPositive / (ClassTwoPositive + ClassOneNegative);
+disp('Accuracy general');
 disp(Accuracy);
+disp('Accuracy benigno');
+disp(bAccuracy);
+disp('Accuracy maligno');
+disp(mAccuracy);
+disp('Precision benigno');
+disp(bPrecision);
+disp('Precision maligno');
+disp(mPrecision);
+disp('Recall benigno');
+disp(bRecall);
+disp(
