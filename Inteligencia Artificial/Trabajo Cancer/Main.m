@@ -2,8 +2,10 @@ addpath('C:\Users\emili\Documents\MATLAB\matlab\Inteligencia Artificial\Trabajo 
 %Empezamos todo con Leave One Out
 %Primer for para saber cual dejar fuera
 %Creamos variables para conocer el accuracy del algoritmo
-Success = 0;
-Wrong = 0;
+ClassOnePositive = 0;
+ClassOneNegative = 0;
+ClassTwoPositive = 0;
+ClassTwoNegative = 0;
 for i = 1 : size(SAMPLES, 1);
     %Variable para conocer si ya dejamos un sample fuera
     leftOne = false;
@@ -66,12 +68,25 @@ for i = 1 : size(SAMPLES, 1);
     end;
     %Predecimos con el que dejamos fuera
     [pred_labels,ac,p] = svmpredict(TestLabel,TestSample,svmstruct,'-b 1 -q');
-    if(ac(1) == 100);
-       Success = Success + 1;
+    %Empezamos con los positivos y negativos
+    %Si se acertó, entonces vemos si fue de clase 2 o clase 4 y sumamos uno
+    %al contador
+    if (ac(1) == 100);
+        if(TestLabel(1) == 2);
+            ClassOnePositive = ClassOnePositive + 1;
+        end;
+        if(TestLabel(1) == 4);
+            ClassTwoPositive = ClassTwoPositive + 1;
+        end;
     end;
     if(ac(1) == 0);
-       Wrong = Wrong + 1;
+        if(TestLabel(1, 1) == 2);
+            ClassOneNegative = ClassOneNegative + 1;
+        end;
+        if(TestLabel(1, 1) == 4);
+            ClassTwoNegative = ClassTwoNegative + 1;
+        end;
     end;
 end;
-Accuracy = (Success+Wrong)/size(SAMPLES, 1);
+Accuracy = (ClassOnePositive+ClassTwoPositive)/ClassOnePositive+ClassTwoPositive+ClassOneNegative+ClassTwoNegative;
 disp(Accuracy);

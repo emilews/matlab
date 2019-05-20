@@ -2,8 +2,10 @@ addpath('C:\Users\emili\Documents\MATLAB\matlab\Inteligencia Artificial\Trabajo 
 %Empezamos todo con Leave One Out
 %Primer for para saber cual dejar fuera
 %Creamos variables para conocer el accuracy del algoritmo
-Success = 0;
-Wrong = 0;
+ClassOnePositive = 0;
+ClassOneNegative = 0;
+ClassTwoPositive = 0;
+ClassTwoNegative = 0;
 for i = 1 : size(SAMPLES, 1);
     %Variable para conocer si ya dejamos un sample fuera
     leftOne = false;
@@ -55,9 +57,10 @@ for i = 1 : size(SAMPLES, 1);
     Label4=zeros(size(Samples4, 1), 1);
     Label4(:,:) = 4;
     LabelsMatrix= [Label2; Label4];
-    
-    %Entrenamos con lo que tenemos (si no es la 
-    svmstruct = svmtrain(LabelsMatrix, AllSamples, '-b 1 -q');
+    %Entrenamos con lo que tenemos (si no es la última iteración)
+    if(i ~= 683);
+        svmstruct = svmtrain(LabelsMatrix, AllSamples, '-b 1 -q');
+    end;
     %Por alguna razón se rompe cuando estamos en la última
     %iteración (i = 683), mejor reiniciamos todo y no hacemos preguntas
     if(i == 683);
@@ -65,13 +68,23 @@ for i = 1 : size(SAMPLES, 1);
     end;
     %Predecimos con el que dejamos fuera
     [pred_labels,ac,p] = svmpredict(TestLabel,TestSample,svmstruct,'-b 1 -q');
-    if(ac(1) == 100);
-       Success = Success + 1;
+    %Empezamos con los positio
+    if (ac(1) == 100);
+        if(TestLabel(1, 1) == 2);
+            ClassOnePositive = ClassOnePositive + 1;
+        end;
+        if(TestLabel(1, 1) == 4);
+            ClassTwoPositive = ClassTwoPositive + 1;
+        end;
     end;
     if(ac(1) == 0);
-       Wrong = Wrong + 1;
+        if(TestLabel(1, 1) == 2);
+            ClassOneNegative = ClassOneNegative + 1;
+        end;
+        if(TestLabel(1, 1) == 4);
+            ClassTwoNegative = ClassTwoNegative + 1;
+        end;
     end;
 end;
-disp(Success);
-Accuracy = (Success+Wrong)/size(SAMPLES, 1);
+Accuracy = (ClassOnePositive+ClassTwoPositive)/ClassOnePositive+ClassTwoPositive+ClassOneNegative+ClassTwoNegative;
 disp(Accuracy);
