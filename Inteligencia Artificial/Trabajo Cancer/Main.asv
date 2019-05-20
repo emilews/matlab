@@ -55,10 +55,9 @@ for i = 1 : size(SAMPLES, 1);
     Label4=zeros(size(Samples4, 1), 1);
     Label4(:,:) = 4;
     LabelsMatrix= [Label2; Label4];
-    %Entrenamos con lo que tenemos (si no es la última iteración)
-    if(i ~= 683);
-        svmstruct = svmtrain(LabelsMatrix, AllSamples, '-b 1 -q');
-    end;
+    
+    %Entrenamos con lo que tenemos (si no es la 
+    svmstruct = svmtrain(LabelsMatrix, AllSamples, '-b 1 -q');
     %Por alguna razón se rompe cuando estamos en la última
     %iteración (i = 683), mejor reiniciamos todo y no hacemos preguntas
     if(i == 683);
@@ -73,5 +72,6 @@ for i = 1 : size(SAMPLES, 1);
        Wrong = Wrong + 1;
     end;
 end;
+disp(Success);
 Accuracy = (Success+Wrong)/size(SAMPLES, 1);
 disp(Accuracy);
