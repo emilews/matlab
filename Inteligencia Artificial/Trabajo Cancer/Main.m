@@ -54,7 +54,10 @@ for i = 1 : size(SAMPLES, 1);
     AllSamples = [Samples2; Samples4];
     %Matriz de labels con 2 y 4
     Label2=ones(size(Samples2, 1), 1);
+    %Cambiamos de 1 a 2 puesto que así están los labels
+    Label2(:,:) = 2;
     Label4=zeros(size(Samples4, 1), 1);
+    %Cambiamos de 0 a 4 puesto que así están los labels
     Label4(:,:) = 4;
     LabelsMatrix= [Label2; Label4];
     %Entrenamos con lo que tenemos (si no es la última iteración)
@@ -80,13 +83,23 @@ for i = 1 : size(SAMPLES, 1);
         end;
     end;
     if(ac(1) == 0);
-        if(TestLabel(1, 1) == 2);
+        if(TestLabel(1) == 2);
             ClassOneNegative = ClassOneNegative + 1;
         end;
-        if(TestLabel(1, 1) == 4);
+        if(TestLabel(1) == 4);
             ClassTwoNegative = ClassTwoNegative + 1;
         end;
     end;
 end;
-Accuracy = (ClassOnePositive+ClassTwoPositive)/ClassOnePositive+ClassTwoPositive+ClassOneNegative+ClassTwoNegative;
+%Sacamos el accuracy general
+Nom = (ClassOnePositive+ClassTwoPositive);
+Den = (ClassOnePositive+ClassTwoPositive+ClassOneNegative+ClassTwoNegative);
+ACC = Nom / Den;
+Accuracy = ACC * 100;
+%Sacamos la precisión para malignos
+Precision = ClassTwoPositive / (ClassTwoPositive + ClassOnePositive);
+%Sacamos el recall
+Recall = ClassTwoPositive / (ClassTwoPositive + ClassOneNegative);
 disp(Accuracy);
+disp(Precision);
+disp(Recall);
