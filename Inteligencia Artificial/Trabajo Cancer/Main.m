@@ -97,9 +97,11 @@ Den = (ClassOnePositive+ClassTwoPositive+ClassOneNegative+ClassTwoNegative);
 ACC = Nom / Den;
 Accuracy = ACC * 100;
 %Sacamos accuracy de benigno
-bAccuracy = (ClassOnePositive /(ClassOnePositive+ClassTwoPositive+ClassOneNegative+ClassTwoNegative))*100;
+den = (ClassOnePositive+ClassTwoPositive+ClassOneNegative+ClassTwoNegative);
+bAccuracy = (ClassOnePositive / den)*100;
 %Sacamos accuracy de maligno
-mAccuracy = (ClassTwoPositive /(ClassOnePositive+ClassTwoPositive+ClassOneNegative+ClassTwoNegative))*100;
+den = (ClassOnePositive+ClassTwoPositive+ClassOneNegative+ClassTwoNegative);
+mAccuracy = (ClassTwoPositive / den)*100;
 %Sacamos accuracy de maligno
 %Sacamos la precisión para benignos
 bPrecision = ClassOnePositive / (ClassOnePositive + ClassTwoPositive);
